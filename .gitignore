@@ -1,0 +1,8 @@
+# thanks to simont (http://stackoverflow.com/a/9227991/2873157)
+# First, ignore everything
+*
+# And all the file types you're interested in.
+!.*
+!getdata
+!listgen
+!list

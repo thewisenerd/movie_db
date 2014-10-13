@@ -1,0 +1,46 @@
+#!/bin/bash
+
+LIST_FILE="list"
+
+OUTPUT_DIR="output"
+
+INFO_FILE="info"
+
+if [ -e $OUTPUT_DIR ]; then
+	rm -rf $OUTPUT_DIR
+fi
+
+mkdir -p $OUTPUT_DIR
+
+for movie in $@
+do
+	if ! [ $( grep -i "$movie" "$LIST_FILE" ) ]; then
+		echo "movie $movie does NOT exist"
+		continue
+	fi
+
+	CDATA=$( grep -i "$movie" "$LIST_FILE" )
+	M_NAME=$( echo $CDATA | tr '|' ' ' | awk '{print $1}' )
+	M_ID=$( echo $CDATA | tr '|' ' ' | awk '{print $2}' )
+	M_YEAR=$( echo $CDATA | tr '|' ' ' | awk '{print $3}' )
+	M_RES=$( echo $CDATA | tr '|' ' ' | awk '{print $4}' )
+
+	M_SEARCH_NAME=$( echo ${M_NAME} | tr "_" " " )
+	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?s=${M_SEARCH_NAME}" )
+	wget "${M_SEARCH_URL}" --quiet --no-verbose -O tmp.json
+	J_FILE_Title=$( jq '.Search[0].Title' tmp.json | sed 's/\"//g' )
+	# add stuff that handles imdb missing :P
+
+	mkdir -p ${OUTPUT_DIR}/${M_NAME}
+	FILE_NAME=$( find ${M_NAME}*/ -type f -name "*.ogg" -o -name "*.avi" -o -name "*.flv" -o -name "*.mkv" -o -name "*.mp4" | head -n 1)
+	e="${FILE_NAME##*.}"
+	#echo "${e}"
+	cp "./${FILE_NAME}" "./${OUTPUT_DIR}/${M_NAME}/${M_NAME}.${e}"
+	
+	touch ${OUTPUT_DIR}/${M_NAME}/${INFO_FILE}
+	
+	echo "Title         : "$J_FILE_Title >> ${OUTPUT_DIR}/${M_NAME}/${INFO_FILE}
+	echo "IMDB ID       : "$M_ID >> ${OUTPUT_DIR}/${M_NAME}/${INFO_FILE}
+	echo "Year released : "$M_YEAR >> ${OUTPUT_DIR}/${M_NAME}/${INFO_FILE}
+	echo "Resolution    : "$M_RES >> ${OUTPUT_DIR}/${M_NAME}/${INFO_FILE}
+done

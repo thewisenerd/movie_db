@@ -1,0 +1,76 @@
+#!/bin/bash
+
+LIST_FILE="list"
+
+if [ -e "$LIST_FILE" ]; then
+	rm -r "$LIST_FILE"
+fi
+
+touch "$LIST_FILE"
+
+re='^[0-9]+$'
+
+ls  -d -- */ | sed 's/\///g' | while read -r FOLDER
+do
+	M_YEAR=$( echo $FOLDER | rev | cut -d '_' -f 2 | rev )
+	M_RES=$( echo $FOLDER | rev | cut -d '_' -f 1 | rev )
+	M_RES_SP=$( echo "$FOLDER" | rev | cut -d '_' -f 1 | rev | sed 's/p//g' )
+
+	WORD_RM=0;
+	if [[ $M_YEAR =~ $re ]] ; then
+		WORD_RM=`expr $WORD_RM + 1`;
+	fi
+
+	if [[ $M_RES_SP =~ $re ]] ; then
+		WORD_RM=`expr $WORD_RM + 1`;
+	fi
+	WORD_RM=`expr $WORD_RM + 1`;
+
+	if (($M_RES_SP<240 || $M_YEAR<240)) #right now, pissed off. let's keep the algos for later.
+	then
+		M_RES_SP="text" # hax to get res
+		M_NAME=$( echo $FOLDER )
+	else
+		M_NAME=$( echo $FOLDER | rev | cut -d "_" -f ${WORD_RM}- | rev )
+	fi
+
+	M_SEARCH_NAME=$( echo ${M_NAME} | tr "_" " " )
+	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?s=${M_SEARCH_NAME}" )
+	wget "${M_SEARCH_URL}" --quiet --no-verbose -O tmp.json
+	J_FILE_imdbID=$( jq '.Search[0].imdbID' tmp.json | sed 's/\"//g' )
+	J_FILE_Year=$( jq '.Search[0].Year' tmp.json | sed 's/\"//g' )
+	rm -f tmp.json #remove tmp.json!
+
+	if ! [[ $M_YEAR =~ $re ]] ; then
+		M_YEAR=$J_FILE_Year
+	fi
+
+	if ! [[ $M_RES_SP =~ $re ]] ; then
+		cd "$FOLDER"
+		FILE_NAME=$( find . -type f -name "*.ogg" -o -name "*.avi" -o -name "*.flv" -o -name "*.mkv" -o -name "*.mp4" | head -n 1)
+		F_HEIGHT=$( exiftool -ImageHeight "${FILE_NAME}" | rev | cut -d ' ' -f1 | rev )
+		cd ..
+		if ! [[ $F_HEIGHT =~ $re ]] ; then
+			M_RES="null"
+		else
+			if (($F_HEIGHT>=1 && $F_HEIGHT<=240))
+			then
+				M_RES="240p"
+			elif (($F_HEIGHT>=241 && $F_HEIGHT<=369))
+			then
+				M_RES="360p"
+			elif (($F_HEIGHT>=371 && $F_HEIGHT<=479))
+			then
+				M_RES="480p"
+			elif (($F_HEIGHT>=480 && $F_HEIGHT<=760))
+			then
+				M_RES="720p"
+			elif (($F_HEIGHT>=761 && $F_HEIGHT<=1200))
+			then
+				M_RES="1080p"
+			fi
+		fi
+	fi
+
+	echo ${M_NAME}\|${J_FILE_imdbID}\|${M_YEAR}\|${M_RES} | tee -a ${LIST_FILE}
+done
