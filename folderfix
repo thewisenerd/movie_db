@@ -1,0 +1,16 @@
+#!/bin/bash
+
+for i in *;
+do
+	DUH=$(echo $i | tr ' ' '_' | tr '[A-Z]' '[a-z]') #me drunk
+	#thx alunduil
+	DUH2=$(echo $DUH | sed "s/[^-!_&'. a-zA-Z0-9]//g" | tr -s '_' ) #try special chars
+	#thx me && stackoverflow && linuxquestions.org
+	#DUH3=$(echo "$DUH2"  )
+	if [ ! "$i" == "$DUH2" ]
+	then
+		echo "moving \"$i\" to \"$DUH2\""
+		mv "$i" "$DUH2"
+	fi
+	#mv "$i" "";
+done
