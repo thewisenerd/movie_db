@@ -1,0 +1,27 @@
+#!/bin/bash
+
+LIST_FILE="list"
+
+if [ ! -e "$LIST_FILE" ]; then
+	echo "list file don't exist!"
+	exit
+fi
+
+LIST_FILE_SP="list.simple"
+
+if [ -e "$LIST_FILE_SP" ]; then
+	rm -r "$LIST_FILE_SP"
+fi
+
+touch "$LIST_FILE_SP"
+
+LC=0
+
+while read line
+do
+	LC=$( expr $LC + 1 )
+	LC_A=$( printf %04d ${LC} )
+	name=$line
+	tmp=$( echo $line | cut -d'|' -f1 | tr '_' ' ' )
+	echo "${LC_A}. $tmp" | tee -a ${LIST_FILE_SP}
+done < $LIST_FILE
