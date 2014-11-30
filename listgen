@@ -37,6 +37,8 @@ do
 	M_SEARCH_NAME=$( echo ${M_NAME} | tr "_" " " )
 	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?s=${M_SEARCH_NAME}" )
 	wget "${M_SEARCH_URL}" --quiet --no-verbose -O tmp.json
+	#todo: deal with movie names like: <movie_name>_<year>
+	#cat tmp.json
 	J_FILE_imdbID=$( jq '.Search[0].imdbID' tmp.json | sed 's/\"//g' )
 	J_FILE_Year=$( jq '.Search[0].Year' tmp.json | sed 's/\"//g' )
 	rm -f tmp.json #remove tmp.json!

@@ -3,6 +3,7 @@
 for i in *;
 do
 	DUH=$(echo $i | tr ' ' '_' | tr '[A-Z]' '[a-z]') #me drunk
+	#DUH=$(echo $i | tr ' ' '_' | tr '.' '_' | tr '[A-Z]' '[a-z]') #me drunk
 	#thx alunduil
 	DUH2=$(echo $DUH | sed "s/[^-!_&'. a-zA-Z0-9]//g" | tr -s '_' ) #try special chars
 	#thx me && stackoverflow && linuxquestions.org
