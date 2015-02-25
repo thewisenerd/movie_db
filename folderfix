@@ -10,7 +10,7 @@ do
 	#DUH3=$(echo "$DUH2"  )
 	if [ ! "$i" == "$DUH2" ]
 	then
-		echo "moving \"$i\" to \"$DUH2\""
+		echo "fixup \"$i\"; suggested: \"$DUH2\""
 		#mv "$i" "$DUH2"
 	fi
 	#mv "$i" "";
