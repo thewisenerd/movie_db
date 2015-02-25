@@ -11,7 +11,7 @@ do
 	if [ ! "$i" == "$DUH2" ]
 	then
 		echo "moving \"$i\" to \"$DUH2\""
-		mv "$i" "$DUH2"
+		#mv "$i" "$DUH2"
 	fi
 	#mv "$i" "";
 done
