@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in *;
+ls  -d -- ${1}*/ | sed 's/\///g' | while read -r i
 do
 	DUH=$(echo $i | tr ' ' '_' | tr '[A-Z]' '[a-z]') #me drunk
 	#DUH=$(echo $i | tr ' ' '_' | tr '.' '_' | tr '[A-Z]' '[a-z]') #me drunk
