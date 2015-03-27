@@ -47,10 +47,14 @@ do
 
 	M_SEARCH_NAME=$( echo ${FOLDER} | tr "_" "+" )
 	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?t=${M_SEARCH_NAME}&r=json" )
-	if [ -e "${FOLDER}/info.json" ]; then
-		cp "${FOLDER}/info.json" "info.json"
-	else
+	if [ "${FORCE_REGEN}" == "1" ]; then
 		wget "${M_SEARCH_URL}" --quiet --no-verbose -O info.json;
+	else
+		if [ -e "${FOLDER}/info.json" ]; then
+			cp "${FOLDER}/info.json" "info.json"
+		else
+			wget "${M_SEARCH_URL}" --quiet --no-verbose -O info.json;
+		fi
 	fi
 	J_FILE_Title=$( jq '.Title' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_imdbID=$( jq '.imdbID' info.json | colorfix.sh | sed 's/\"//g' )
