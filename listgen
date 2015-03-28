@@ -92,7 +92,7 @@ do
 
 	if ((${ERR_FL}==1)) ; then
 		echo "something wrong with ${FOLDER}. Please fixup with an info.json!"
-		echo ${FOLDER} | tee -a ${ERR_LIST_FILE}
+		echo ${FOLDER} >> ${ERR_LIST_FILE}
 	else
 		echo ${J_FILE_Title}\|${J_FILE_imdbID}\|${J_FILE_Year}\|${M_RES}\|${J_FILE_Rating}\|${J_FILE_Language}\|${F_MODIFY} | tee -a ${LIST_FILE}
 		if [ ! -e "${FOLDER}/info.json" ] ; then
