@@ -69,7 +69,6 @@ do
 	J_FILE_Year=$( jq '.Released' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Rating=$( jq '.imdbRating' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Language=$( jq '.Language' info.json | colorfix.sh | sed 's/\"//g' )
-	rm -f info.json #remove info.json!
 
 	ERR_FL=0;
 	if [[ "${J_FILE_Title}" == "null" ]] ; then
@@ -79,17 +78,20 @@ do
 	elif [[ "${J_FILE_Year}" == "null" ]] ; then
 		ERR_FL=1;
 	elif [[ "${J_FILE_Year}" == "N/A" ]] ; then
-		${J_FILE_Year} = $( jq '.Year' info.json | colorfix.sh | sed 's/\"//g' )
+		J_FILE_Year=$( jq '.Year' info.json | colorfix.sh | sed 's/\"//g' )
 	elif [[ "${M_RES}" == "null" ]] ; then
 		ERR_FL=1;
 	elif [[ "${J_FILE_Rating}" == "null" ]] ; then
 		ERR_FL=1;
 	elif [[ "${J_FILE_Language}" == "null" ]] ; then
 		ERR_FL=1;
+	elif [[ "${J_FILE_Language}" == "N/A" ]] ; then
+		J_FILE_Language="English"
 	elif [[ "${F_MODIFY}" == "null" ]] ; then
 		ERR_FL=1;
 	fi
 
+	#rm -f info.json #remove info.json!
 	if ((${ERR_FL}==1)) ; then
 		echo "something wrong with ${FOLDER}. Please fixup with an info.json!"
 		echo ${FOLDER} >> ${ERR_LIST_FILE}
