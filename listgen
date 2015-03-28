@@ -106,7 +106,7 @@ do
 		J_FILE_Released=$( date -d "${J_FILE_Released}" +'%Y-%m-%d' );
 	fi
 
-	#rm -f info.json #remove info.json!
+	rm -f info.json #remove info.json!
 	if ((${ERR_FL}==1)) ; then
 		echo "something wrong with ${FOLDER}. Please fixup with an info.json!"
 		echo ${FOLDER} >> ${ERR_LIST_FILE}
