@@ -12,6 +12,14 @@ fi
 
 touch "$LIST_FILE"
 
+ERR_LIST_FILE="err.list"
+
+if [ -e "$ERR_LIST_FILE" ]; then
+	rm -r "$ERR_LIST_FILE"
+fi
+
+touch "$ERR_LIST_FILE"
+
 re='^[0-9]+$'
 
 ls  -d -- ${1}*/ | sed 's/\///g' | while read -r FOLDER
@@ -58,7 +66,7 @@ do
 	fi
 	J_FILE_Title=$( jq '.Title' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_imdbID=$( jq '.imdbID' info.json | colorfix.sh | sed 's/\"//g' )
-	J_FILE_Year=$( jq '.Year' info.json | colorfix.sh | sed 's/\"//g' )
+	J_FILE_Year=$( jq '.Released' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Rating=$( jq '.imdbRating' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Language=$( jq '.Language' info.json | colorfix.sh | sed 's/\"//g' )
 	rm -f info.json #remove info.json!
@@ -82,6 +90,7 @@ do
 
 	if ((${ERR_FL}==1)) ; then
 		echo "something wrong with ${FOLDER}. Please fixup with an info.json!"
+		echo ${FOLDER} | tee -a ${ERR_LIST_FILE}
 	else
 		echo ${J_FILE_Title}\|${J_FILE_imdbID}\|${J_FILE_Year}\|${M_RES}\|${J_FILE_Rating}\|${J_FILE_Language}\|${F_MODIFY} | tee -a ${LIST_FILE}
 		if [ ! -e "${FOLDER}/info.json" ] ; then
