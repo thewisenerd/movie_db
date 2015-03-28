@@ -78,6 +78,8 @@ do
 		ERR_FL=1;
 	elif [[ "${J_FILE_Year}" == "null" ]] ; then
 		ERR_FL=1;
+	elif [[ "${J_FILE_Year}" == "N/A" ]] ; then
+		${J_FILE_Year} = $( jq '.Year' info.json | colorfix.sh | sed 's/\"//g' )
 	elif [[ "${M_RES}" == "null" ]] ; then
 		ERR_FL=1;
 	elif [[ "${J_FILE_Rating}" == "null" ]] ; then
