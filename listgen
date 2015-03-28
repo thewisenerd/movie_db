@@ -60,6 +60,9 @@ do
 	M_SEARCH_NAME=$( echo ${FOLDER} | tr "_" " " )
 	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?t=${M_SEARCH_NAME}&r=json" )
 	if [ "${FORCE_REGEN}" == "1" ]; then
+		if [ -e "${FOLDER}/info.json" ]; then
+			rm -f "${FOLDER}/info.json";
+		fi
 		wget "${M_SEARCH_URL}" --quiet --no-verbose -O info.json;
 	else
 		if [ -e "${FOLDER}/info.json" ]; then
@@ -70,7 +73,8 @@ do
 	fi
 	J_FILE_Title=$( jq '.Title' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_imdbID=$( jq '.imdbID' info.json | colorfix.sh | sed 's/\"//g' )
-	J_FILE_Year=$( jq '.Released' info.json | colorfix.sh | sed 's/\"//g' )
+	J_FILE_Year=$( jq '.Year' info.json | colorfix.sh | sed 's/\"//g' )
+	J_FILE_Released=$( jq '.Released' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Rating=$( jq '.imdbRating' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Language=$( jq '.Language' info.json | colorfix.sh | sed 's/\"//g' )
 
@@ -81,8 +85,10 @@ do
 		ERR_FL=1;
 	elif [[ "${J_FILE_Year}" == "null" ]] ; then
 		ERR_FL=1;
-	elif [[ "${J_FILE_Year}" == "N/A" ]] ; then
-		J_FILE_Year=$( jq '.Year' info.json | colorfix.sh | sed 's/\"//g' )
+	elif [[ "${J_FILE_Released}" == "null" ]] ; then
+		ERR_FL=1;
+	elif [[ "${J_FILE_Released}" == "N/A" ]] ; then
+		J_FILE_Released=${J_FILE_Year}
 	elif [[ "${M_RES}" == "null" ]] ; then
 		ERR_FL=1;
 	elif [[ "${J_FILE_Rating}" == "null" ]] ; then
@@ -96,8 +102,8 @@ do
 	fi
 
 
-	if [[ $(echo "${J_FILE_Year}" | grep -E "^([0-9]{2})\s([a-zA-Z]{3})\s([0-9]{4})$") ]]; then
-		J_FILE_Year=$( date -d "${J_FILE_Year}" +'%Y-%m-%d' );
+	if [[ $(echo "${J_FILE_Released}" | grep -E "^([0-9]{2})\s([a-zA-Z]{3})\s([0-9]{4})$") ]]; then
+		J_FILE_Released=$( date -d "${J_FILE_Released}" +'%Y-%m-%d' );
 	fi
 
 	#rm -f info.json #remove info.json!
@@ -105,10 +111,17 @@ do
 		echo "something wrong with ${FOLDER}. Please fixup with an info.json!"
 		echo ${FOLDER} >> ${ERR_LIST_FILE}
 	else
-		echo ${J_FILE_Title}\|${J_FILE_imdbID}\|${J_FILE_Year}\|${M_RES}\|${J_FILE_Rating}\|${J_FILE_Language}\|${F_MODIFY} | tee -a ${LIST_FILE}
+		echo ${J_FILE_Title}\|${J_FILE_imdbID}\|${J_FILE_Released}\|${M_RES}\|${J_FILE_Rating}\|${J_FILE_Language}\|${F_MODIFY} | tee -a ${LIST_FILE}
 		if [ ! -e "${FOLDER}/info.json" ] ; then
 			touch "${FOLDER}/info.json"
-			echo "{\"Title\":\"${J_FILE_Title}\",\"Year\":\"${J_FILE_Year}\",\"imdbID\":\"${J_FILE_imdbID}\"}" > "${FOLDER}/info.json"
+			echo "{
+\"Title\":\"${J_FILE_Title}\",
+\"Year\":\"${J_FILE_Year}\",
+\"imdbID\":\"${J_FILE_imdbID}\",
+\"Released\":\"${J_FILE_Released}\",
+\"imdbRating\":\"${J_FILE_Rating}\",
+\"Language\":\"${J_FILE_Language}\"
+}" > "${FOLDER}/info.json"
 		fi
 	fi
 done
