@@ -6,16 +6,20 @@
 
 LIST_FILE="list"
 
-if [ -e "$LIST_FILE" ]; then
-	rm -r "$LIST_FILE"
+if [ "${1}" == "" ]; then
+	if [ -e "$LIST_FILE" ]; then
+		rm -r "$LIST_FILE"
+	fi
 fi
 
 touch "$LIST_FILE"
 
 ERR_LIST_FILE="err.list"
 
-if [ -e "$ERR_LIST_FILE" ]; then
-	rm -r "$ERR_LIST_FILE"
+if [ "${1}" == "" ]; then
+	if [ -e "$ERR_LIST_FILE" ]; then
+		rm -r "$ERR_LIST_FILE"
+	fi
 fi
 
 touch "$ERR_LIST_FILE"
@@ -53,7 +57,7 @@ do
 		fi
 	fi
 
-	M_SEARCH_NAME=$( echo ${FOLDER} | tr "_" "+" )
+	M_SEARCH_NAME=$( echo ${FOLDER} | tr "_" " " )
 	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?t=${M_SEARCH_NAME}&r=json" )
 	if [ "${FORCE_REGEN}" == "1" ]; then
 		wget "${M_SEARCH_URL}" --quiet --no-verbose -O info.json;
