@@ -9,20 +9,18 @@ LIST_FILE="list"
 if [ "${1}" == "" ]; then
 	if [ -e "$LIST_FILE" ]; then
 		rm -r "$LIST_FILE"
+		touch "$LIST_FILE"
 	fi
 fi
-
-touch "$LIST_FILE"
 
 ERR_LIST_FILE="err.list"
 
 if [ "${1}" == "" ]; then
 	if [ -e "$ERR_LIST_FILE" ]; then
 		rm -r "$ERR_LIST_FILE"
+		touch "$ERR_LIST_FILE"
 	fi
 fi
-
-touch "$ERR_LIST_FILE"
 
 re='^[0-9]+$'
 
