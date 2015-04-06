@@ -75,6 +75,7 @@ do
 	J_FILE_Released=$( jq '.Released' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Rating=$( jq '.imdbRating' info.json | colorfix.sh | sed 's/\"//g' )
 	J_FILE_Language=$( jq '.Language' info.json | colorfix.sh | sed 's/\"//g' )
+	J_ENC_Notes=$( jq '.Notes' info.json | colorfix.sh | sed 's/\"//g' )
 
 	ERR_FL=0;
 	if [[ "${J_FILE_Title}" == "null" ]] ; then
@@ -109,17 +110,30 @@ do
 		echo "something wrong with ${FOLDER}. Please fixup with an info.json!"
 		echo ${FOLDER} >> ${ERR_LIST_FILE}
 	else
-		echo ${J_FILE_Title}\|${J_FILE_imdbID}\|${J_FILE_Released}\|${M_RES}\|${J_FILE_Rating}\|${J_FILE_Language}\|${F_MODIFY} | tee -a ${LIST_FILE}
+		STR=${J_FILE_Title}\|${J_FILE_imdbID}\|${J_FILE_Released}\|${M_RES}\|${J_FILE_Rating}\|${J_FILE_Language}\|${F_MODIFY}
+		if [[ "${J_ENC_Notes}" != "null" ]] ; then
+			STR=${STR}\|${J_ENC_Notes}
+		fi
+		echo ${STR} | tee -a ${LIST_FILE}
 		if [ ! -e "${FOLDER}/info.json" ] ; then
 			touch "${FOLDER}/info.json"
-			echo "{
+
+			STR="{
 \"Title\":\"${J_FILE_Title}\",
 \"Year\":\"${J_FILE_Year}\",
 \"imdbID\":\"${J_FILE_imdbID}\",
 \"Released\":\"${J_FILE_Released}\",
 \"imdbRating\":\"${J_FILE_Rating}\",
-\"Language\":\"${J_FILE_Language}\"
-}" > "${FOLDER}/info.json"
+\"Language\":\"${J_FILE_Language}\"";
+
+			if [[ "${J_ENC_Notes}" != "null" ]] ; then
+				STR=${STR}",
+\"Notes\":\"${J_ENC_Notes}\""
+			fi
+			STR=${STR}"
+}";
+
+			echo ${STR} > "${FOLDER}/info.json"
 		fi
 	fi
 done
