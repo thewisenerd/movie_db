@@ -100,6 +100,13 @@ do
 		ERR_FL=1;
 	fi
 
+	RELEASE_STR_LEN=${#J_FILE_Released}
+	if ((${RELEASE_STR_LEN}==10)); then
+		RELEASE_STR_REV=$( echo ${J_FILE_Released} | rev )
+		if [[ ${RELEASE_STR_REV:4:1} == " " ]]; then
+			J_FILE_Released="0"${J_FILE_Released}
+		fi
+	fi
 
 	if [[ $(echo "${J_FILE_Released}" | grep -E "^([0-9]{2})\s([a-zA-Z]{3})\s([0-9]{4})$") ]]; then
 		J_FILE_Released=$( date -d "${J_FILE_Released}" +'%Y-%m-%d' );
