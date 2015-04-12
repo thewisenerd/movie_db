@@ -5,6 +5,7 @@
 #author: Vineeth Raj <contact.twn@openmailbox.org>
 
 LIST_FILE="list"
+IMDB_ID_FILE=".imdb"
 
 if [ "${1}" == "" ]; then
 	if [ -e "$LIST_FILE" ]; then
@@ -57,6 +58,9 @@ do
 
 	M_SEARCH_NAME=$( echo ${FOLDER} | tr "_" " " )
 	M_SEARCH_URL=$( echo "http://www.omdbapi.com/?t=${M_SEARCH_NAME}&r=json" )
+	if [ -e "${FOLDER}/${IMDB_ID_FILE}" ]; then
+		M_SEARCH_URL=$( echo "omdbapi.com/?i=$( cat "${FOLDER}/${IMDB_ID_FILE}" )&r=json" )
+	fi
 	if [ "${FORCE_REGEN}" == "1" ]; then
 		if [ -e "${FOLDER}/info.json" ]; then
 			rm -f "${FOLDER}/info.json";
