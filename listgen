@@ -29,7 +29,7 @@ ls  -d -- ${1}*/ | sed 's/\///g' | while read -r FOLDER
 do
 	#get resolution
 	cd "$FOLDER"
-	FILE_NAME=$( find . -type f -name "*.ogg" -o -name "*.avi" -o -name "*.flv" -o -name "*.mkv" -o -name "*.mp4" | head -n 1)
+	FILE_NAME=$( find . -type f -name "*.ogg" -o -name "*.avi" -o -name "*.flv" -o -name "*.mkv" -o -name "*.mp4" -o -name "*.m4v" | head -n 1)
 	F_HEIGHT=$( exiftool -ImageHeight "${FILE_NAME}" | rev | cut -d ' ' -f1 | rev )
 	F_MODIFY=$( stat -c %y "${FILE_NAME}" | cut -d' ' -f1 )
 
