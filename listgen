@@ -25,7 +25,7 @@ fi
 
 re='^[0-9]+$'
 
-ls  -d -- ${1}*/ | sed 's/\///g' | while read -r FOLDER
+ls  -d -- ${1}*/ | grep -v 'lost+found' | sed 's/\///g' | while read -r FOLDER
 do
 	#get resolution
 	cd "$FOLDER"
